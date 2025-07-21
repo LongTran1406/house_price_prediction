@@ -1,67 +1,73 @@
-data = []
-headers = ["id", "address", "bedroom_nums", "bathroom_nums", "car_spaces", "land_size", "house_type", "price"]
-
-data.append(headers)
-
-cnt = 0
-
+import pandas as pd
 import time
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 
+# Output data structure
+data = []
+headers = ["id", "address", "bedroom_nums", "bathroom_nums", "car_spaces", "land_size", "price"]
+data.append(headers)
 
-for step in range(0, 8):
+cnt = 0
+
+# Create driver once
+
+
+
+for step in range(0, 6):  # House size buckets
     driver = uc.Chrome()
-    for i in range(step * 9  + 1 , step * 9 + 10):
-        cnt += 1
-        driver.get(f"https://www.realestate.com.au/sold/property-house-in-nsw/list-{i}")
-        time.sleep(3)
-        listings = driver.find_elements(By.CSS_SELECTOR, 'a.details-link')
-        urls = [l.get_attribute('href') for l in listings]
-        print(cnt)
-        for url in urls:
-            bedroom_nums = None
-            bathroom_nums = None
-            car_spaces = None
-            land_size = None
-            house_type = None
-            driver.get(url)
-            time.sleep(0.1)
+    house_size_min = 200 + step * 200
+    house_size_max = 200 + (step + 1) * 200
+    print(f"Scraping size: {house_size_min}-{house_size_max} m²")
+
+    for i in range(1, 80):  # Pages 1 to 80
+        url = f"https://www.realestate.com.au/sold/property-house-size-{house_size_min}-{house_size_max}-in-nsw/list-{i}"
+        #print(f"   Page {i}: {url}")
+        driver.get(url)
+        time.sleep(0.1)
+
+        # Each card
+        property_cards = driver.find_elements(By.CLASS_NAME, "residential-card__content")
+
+        for card in property_cards:
+            cnt += 1
+
+            # Get address
             try:
-                address = driver.find_element(By.CSS_SELECTOR, 'h1.property-info-address').text
+                address = card.find_element(By.CLASS_NAME, "residential-card__details-link").text.strip()
             except:
                 address = None
+
+            # Get features
+            bedroom_nums = bathroom_nums = car_spaces = land_size = price = None
+
+            features = card.find_elements(By.XPATH, ".//ul[contains(@class, 'residential-card__primary')]//li[@aria-label]")
+            for item in features:
+                label = item.get_attribute("aria-label").lower()
+                value = label.split(" ")[0]
+                if "bedroom" in label:
+                    bedroom_nums = value
+                elif "bathroom" in label:
+                    bathroom_nums = value
+                elif "car" in label:
+                    car_spaces = value
+                elif "size" in label:
+                    land_size = value
+
+
+            # Get price
             try:
-                try:
-                    house_type = driver.find_element(By.CSS_SELECTOR, 'ul.styles__Wrapper-sc-xhfhyt-1.bGRFcz.property-info__primary-features').text.split(' ')[0].split('\n')[-1]
-                except:
-                    house_type = None
-                items = driver.find_elements(By.XPATH, "//ul[contains(@class, 'property-info__primary-features')]//li[@aria-label]")
-                for item in items:
-                    if 'bedroom' in item.get_attribute("aria-label"):
-                        bedroom_nums = item.get_attribute("aria-label").split(' ')[0]
-                    if 'bathroom' in item.get_attribute("aria-label"):
-                        bathroom_nums = item.get_attribute("aria-label").split(' ')[0]
-                    if 'car' in item.get_attribute("aria-label"):
-                        car_spaces = item.get_attribute("aria-label").split(' ')[0]
-                    if 'size' in item.get_attribute("aria-label"):
-                        land_size = item.get_attribute("aria-label").split(' ')[0]
-                    # print(item.get_attribute("aria-label"))
-        
-            except:
-                print(2)
-            try:
-                price = driver.find_element(By.CSS_SELECTOR, 'span.property-price.property-info__price').text
+                price = card.find_element(By.CLASS_NAME, "property-price").text.strip()
             except:
                 price = None
-            data.append([cnt, address, bedroom_nums, bathroom_nums, car_spaces, land_size, house_type, price])
-            # print(price)
-    
-    # print(data)
+
+            # Add to dataset
+            data.append([cnt, address, bedroom_nums, bathroom_nums, car_spaces, land_size, price])
+
+        time.sleep(0.1)
     driver.quit()
-
-import pandas as pd
-
-# assuming your 2D list is called data, with first row as header
+    
+# Save data to CSV
 df = pd.DataFrame(data[1:], columns=data[0])
-df.to_csv('rawdataset.csv', index=False)
+df.to_csv("raw_dataset.csv", index=False)
+print("✅ Data saved to nsw_sold_properties_cleaned.csv")
