@@ -68,4 +68,6 @@ postcode_avg_price_per_m2 = df.groupby('postcode')['price_per_m2'].mean()
 df['postcode_avg_price_per_m2'] = df['postcode'].map(postcode_avg_price_per_m2)
 
 # Final output
+df = df.dropna()
+df = df[(df['lat'] < 0) & (df['lon'] > 0)]
 df.to_csv("dataset_cleaned.csv", index=False)
