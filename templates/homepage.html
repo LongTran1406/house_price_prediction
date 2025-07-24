@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Demo for NSW's housing prediction</title>
+    </head>
+    <body>
+        <h1>NSW housing prediction</h1>
+        <input id="address" type="text" placeholder="Enter your address: e.g. 10 High Street, North Lambton" id = >
+        <input id="bed_num" type="number" placeholder="Enter the number of bedroom number" >
+        <input id="bath_num" type="number" placeholder="Enter the number of bathroom">
+        <input id="parking" type="number" placeholder="Enter the number of parking spaces">
+        <input id="area" type="number" placeholder="Enter the land area(m2)">
+        <button onclick="predict()">Predict</button>
+        <div id="display"></div>
+        <script>
+            async function predict(){
+                const address = document.getElementById('address').value;
+                const bed_num = document.getElementById('bed_num').value;
+                const bath_num = document.getElementById('bath_num').value;
+                const parking = document.getElementById('parking').value;
+                const area = document.getElementById('area').value;
+                console.log(address, bed_num, bath_num, parking, area)
+                const response = await fetch('/api/predict', {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({address, bed_num, bath_num, parking, area})
+            })
+            const answer = await response.json()
+            console.log(answer['predicted_price'])
+            document.getElementById('display').innerHTML = answer['predicted_price']
+            }
+        </script>
+    </body>
+</html>
