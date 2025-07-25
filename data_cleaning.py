@@ -11,6 +11,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Load environment variables
 load_dotenv()
 
+key1 = os.getenv("LOCATIONIQ_KEY_1")
+key2 = os.getenv("LOCATIONIQ_KEY_2")
+key3 = os.getenv("LOCATIONIQ_KEY_3")
 # Load data
 df = pd.read_csv("raw_dataset.csv")
 df = df.drop(columns=['id'])
@@ -29,9 +32,9 @@ df = df.reset_index(drop=True)
 
 # Geocoding setup
 api_keys = [
-    'pk.d92da29e6c7492a1b8aede6a62a760b3',
-    'pk.f50fcfb342970eb8291b86951452732c',
-    'pk.a0b799c56650c35c52723fd6f03f02e3'
+    key1, 
+    key2, 
+    key3
 ]
 url = "https://us1.locationiq.com/v1/search"
 checkpoint_file = "geocode_partial.csv"
