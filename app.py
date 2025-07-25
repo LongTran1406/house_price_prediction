@@ -5,7 +5,10 @@ from flask import Flask, jsonify, render_template, request
 import requests
 import re
 import pandas as pd
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -33,6 +36,7 @@ def home():
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
+    api = os.getenv('LOCATIONIQ_KEY_1')
     user_input = request.get_json()
     print(user_input)
     data = [[]]
@@ -52,7 +56,7 @@ def predict():
     area = data[0][4]
     print(address)
     params = {
-            'key': 'pk.d92da29e6c7492a1b8aede6a62a760b3',
+            'key': api,
             'q': address,
             'format': 'json'
         }
@@ -124,5 +128,5 @@ model = load_model()
 df = pd.read_csv("dataset_cleaned.csv")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
     
