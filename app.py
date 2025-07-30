@@ -12,8 +12,12 @@ load_dotenv()
 
 app = Flask(__name__)
 
+import sklearn
+print(sklearn.__version__)
+
+
 def load_model():
-    with open('house_pricing_model.pkl', 'rb') as f:
+    with open('linear_model.pkl', 'rb') as f:
         model = pickle.load(f)
     return model
 
@@ -112,17 +116,26 @@ def predict():
         'nearest_city_Sydney',
         'nearest_city_Wollongong'
     ]
-
+    
     raw_df = pd.DataFrame(new_data, columns=column_names)
+    print(raw_df)
+    for col in raw_df.columns:
+        print(col)
+        print(raw_df[col])
+    print(numeric_features)
     X_poly = poly.transform(raw_df[numeric_features])
     X_poly_df = pd.DataFrame(X_poly, columns=poly_feature_names)
     X_enhanced = pd.concat([raw_df[non_numeric_columns], X_poly_df], axis=1)
-    X_scaled = scaler.transform(X_enhanced)
-    log_price_pred = model.predict(X_scaled)
-    price_pred = np.expm1(log_price_pred)
+    print(X_enhanced.shape)
+    print('------------')
+    print(X_enhanced)
+    print('----------')
+    # X_scaled = scaler.transform(X_enhanced)
+    # print(X_scaled)
+    price_pred = model.predict(X_enhanced)
+    # price_pred = np.expm1(log_price_pred)
     print(price_pred)
     return jsonify({'predicted_price': round(float(price_pred[0]), 2)})
-
 
 model = load_model()
 df = pd.read_csv("dataset_cleaned.csv")

@@ -19,12 +19,12 @@ df = pd.read_csv("raw_dataset.csv")
 df = df.drop(columns=['id'])
 
 # Visualize distributions
-for col in ['bedroom_nums', 'bathroom_nums', 'car_spaces']:
-    df[col].hist()
-    plt.xlabel(col)
-    plt.ylabel('Frequency')
-    print(df[col].value_counts())
-    plt.show()
+# for col in ['bedroom_nums', 'bathroom_nums', 'car_spaces']:
+#     df[col].hist()
+#     plt.xlabel(col)
+#     plt.ylabel('Frequency')
+#     print(df[col].value_counts())
+#     plt.show()
 
 # Fill NA with mode for categorical features
 

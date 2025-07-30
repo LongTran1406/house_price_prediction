@@ -1,0 +1,5 @@
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = s3://mlflow-bucket-1406/dvc-data
+    endpointurl = https://s3.ap-southeast-2.amazonaws.com

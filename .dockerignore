@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.ipynb
+.env
+.git
+venv/
+# Ignore all CSVs except dataset_cleaned.csv
+*.csv
+!dataset_cleaned.csv

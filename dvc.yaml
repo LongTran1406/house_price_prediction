@@ -1,0 +1,27 @@
+stages:
+
+  data_cleaning:
+    cmd: python data_cleaning.py raw_dataset.csv geocode_partial.csv
+    deps: 
+      - data_cleaning.py 
+      - raw_dataset.csv
+    outs:
+      - geocode_partial.csv
+    
+  data_cleaning2:
+    cmd: python data_cleaning2.py raw_dataset.csv geocode_partial.csv dataset_cleaned.csv
+    deps:
+      - data_cleaning2.py 
+      - raw_dataset.csv 
+      - geocode_partial.csv 
+    outs:
+      - dataset_cleaned.csv
+
+  model_building:
+    cmd: python model_building.py dataset_cleaned.csv
+    deps: 
+      - dataset_cleaned.csv 
+      - model_building.py
+    outs:
+      - linear_model.pkl
+      - preprocessing.pkl

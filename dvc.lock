@@ -1,0 +1,59 @@
+schema: '2.0'
+stages:
+  data_cleaning:
+    cmd: python data_cleaning.py raw_dataset.csv geocode_partial.csv
+    deps:
+    - path: data_cleaning.py
+      hash: md5
+      md5: 2d8210aecb6e8ae0a88f251f1073f52e
+      size: 3383
+    - path: raw_dataset.csv
+      hash: md5
+      md5: 9ff8120c7256eae52ffa37897ef70db2
+      size: 749906
+    outs:
+    - path: geocode_partial.csv
+      hash: md5
+      md5: d98183a817412340a1fe6c37a9d5d230
+      size: 412801
+  data_cleaning2:
+    cmd: python data_cleaning2.py raw_dataset.csv geocode_partial.csv 
+      dataset_cleaned.csv
+    deps:
+    - path: data_cleaning2.py
+      hash: md5
+      md5: 8feb4b98aa63fcea06aa2b1489f47947
+      size: 2717
+    - path: geocode_partial.csv
+      hash: md5
+      md5: d98183a817412340a1fe6c37a9d5d230
+      size: 412801
+    - path: raw_dataset.csv
+      hash: md5
+      md5: 9ff8120c7256eae52ffa37897ef70db2
+      size: 749906
+    outs:
+    - path: dataset_cleaned.csv
+      hash: md5
+      md5: 91c57f5289743c2aba50d68ddfe713d9
+      size: 2015469
+  model_building:
+    cmd: python model_building.py dataset_cleaned.csv
+    deps:
+    - path: dataset_cleaned.csv
+      hash: md5
+      md5: 91c57f5289743c2aba50d68ddfe713d9
+      size: 2015469
+    - path: model_building.py
+      hash: md5
+      md5: 9ff5df6aac4e6afefa073faf9a069c15
+      size: 5458
+    outs:
+    - path: linear_model.pkl
+      hash: md5
+      md5: ff133483f86560767f88ccf4696786f6
+      size: 4911
+    - path: preprocessing.pkl
+      hash: md5
+      md5: e20b67a7b26b0077f5c1c8025e420050
+      size: 4258
